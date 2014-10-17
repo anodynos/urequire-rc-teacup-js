@@ -1,7 +1,7 @@
 {
   "name": "urequire-rc-teacup-js",
   "description": "uRequire ResourceConverter from `*.teacup` to a `*.js` module, automagically importing *all* teacup exported keys.",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "homepage": "http://uRequire.org",
   "author": {
     "name": "Agelos Pikoulas",

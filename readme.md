@@ -1,31 +1,34 @@
-# urequire-rc-teacup-js2html
+# urequire-rc-teacup-js
 
 ## Introduction
 
-[uRequire](http://urequire.org) [ResourceConverter](http://urequire.org/resourceconverters.coffee) that converts each `*.teacup` to a `*.js` module, automagically importing *all* teacup exported keys (i.e. no need to `{head, body, div, ..} = teacup`).
+[uRequire](http://urequire.org) [ResourceConverter](http://urequire.org/resourceconverters.coffee) that converts each `*.teacup` to a `*.js` module, automagically importing teacup exported keys (i.e. no need to `{head, body, div, ..} = teacup`).
 
 Also it decorates your exported function with a `renderable`, which never harms!
 
 Each template is treated as a Module (that exports a simple function) and can participate like all other modules in the bundle.
 
-*Note: To convert them to '.html' use [`urequire-rc-teacup-js2html`](http://npmjs.org/package/urequire-rc-teacup-js2html).*
+Teacup modules can be written in `'coffee-script'`, but also `'coco'`, `'LiveScript'`, `'iced-coffee-script'` via the `compiler` option.
 
+*Note: `teacup` dependency must be available when you invoke the `.js` exported function in your package.*
 
 ## Install
 
 ```
-$ npm install urequire-rc-teacup-js --save
+    $ npm install urequire-rc-teacup-js --save
 ```
 
 ## Authoring
 
-Assuming file `'persons.teacup'`
+Each template/module source must be a *nodejs module* that `module.exports = (...)->` a single template Function.
+
+Assuming file `'persons.teacup'` :
 
 ```coffeescript
     module.exports = (names)-> ul -> li name for name in names
 ```
 
-and `'home.teacup'` can be
+and `'home.teacup'` :
 
 ```coffeescript
     persons = require './persons'
@@ -35,10 +38,10 @@ and `'home.teacup'` can be
       html ->
         body ->
           div '#Hello, ',-> greeting
-          persons ['John', 'Maria']
+          persons ['Leonardo', 'Da Vinci']
 ```
 
-Note there's no need to import any teacup keys as vars, eg `div = teacup.div` etc - they are automagically imported by `urequire-rc-teacup-js`
+Note there's no need to import any teacup keys as vars, eg `{div, body} = teacup` etc - they are imported by `urequire-rc-teacup-js`
 
 ### How to use (in your [uRequire config](http://urequire.org/masterdefaultsconfig.coffee))
 
@@ -47,6 +50,30 @@ To convert all `.teacup` files in your 'path' a corresponding `.js` module in yo
 ```javascript
     resources: [ ..., `teacup-js` , ...]
 ```
+
+### Limit imported tags
+
+If you want to limit which tags get imported as variables from teacup, use the `tags` option:
+
+```javascript
+    resources: [
+        ...
+        [ 'teacup-js', tags: 'html, doctype, body, div, ul, li' ]
+        ...
+    ]
+```
+
+### Use a different language `compiler`
+
+You can use `options.compiler` which defaults to 'coffee-script', but also can also be 'coco', 'LiveScript' or 'iced-coffee-script'.
+
+```javascript
+    resources: [ `teacup-js`, compiler: 'coco' ]
+```
+
+Note these extra compilers are NOT in the dependencies, you need to `npm install` them in your project.
+
+### Convert to HTML
 
 To convert them all to `.html` as well, use [`teacup-js2html`](http://npmjs.org/package/urequire-rc-teacup-js2html).
 

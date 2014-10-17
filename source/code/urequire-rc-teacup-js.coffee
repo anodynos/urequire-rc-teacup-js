@@ -1,27 +1,28 @@
-coffee = require 'coffee-script'
 teacup = require 'teacup'
+
+compiler = null
 
 module.exports = [
   '$~teacup-js'
 
-  """ """
+  """
+  uRequire ResourceConverter that converts `*.teacup` to `*.js`,
+  automagically importing teacup exported keys (i.e. no need to `{head, body, div, ..} = teacup`).
+  """
 
   ['**/*.teacup']
 
   (t)->
-    ###
-    @options : NOT IMPLEMENTED
-      language: String, default 'coffee-script', can also be 'coco', 'LiveScript' etc
-      commonCode: boolean (false), if true the imported vars (eg 'div', 'body' etc)
-                  become [`commonCode`](http://urequire.org/masterdefaultsconfig.coffee#bundle.commoncode)
-                  when 'combined' template is used.
-    ###
-    coffee.compile """
-      {#{(k for k of teacup).join ','}} = require 'teacup'
+    compiler or= require @options.compiler || 'coffee-script'
+
+    compiler.compile """
+      teacup = require 'teacup'
+
+      {#{@options.tags || (k for k of teacup).join ','}} = teacup
 
       #{t.converted}
 
-      module.exports = renderable module.exports
+      module.exports = teacup.renderable module.exports
     """
 
   '.js'
